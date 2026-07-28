@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "IT Internship Scraper",
+  "version": "2.0.0",
+  "description": "Scrape IT, AI, and Software internship job listings from Indeed, Internshala, and SimplyHired. Export to Excel sorted by country with direct apply links.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "downloads",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://www.indeed.com/*",
+    "https://internshala.com/*",
+    "https://www.simplyhired.com/*",
+    "<all_urls>"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "IT Internship Scraper"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": []
+}

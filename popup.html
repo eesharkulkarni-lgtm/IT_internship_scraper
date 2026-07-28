@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IT Internship Scraper</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- ─── HEADER ─── -->
+  <header class="header">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="#818cf8" stroke-width="2"/>
+          <rect x="14" y="3" width="7" height="7" rx="1.5" stroke="#60a5fa" stroke-width="2"/>
+          <rect x="3" y="14" width="7" height="7" rx="1.5" stroke="#a78bfa" stroke-width="2"/>
+          <path d="M14 17.5h7M17.5 14v7" stroke="#34d399" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="logo-info">
+        <div class="logo-name">InternScraper</div>
+        <div class="logo-tagline">IT · AI · Software Internships</div>
+      </div>
+    </div>
+    <div class="badge" id="statusBadge">
+      <span class="badge-dot" id="statusDot"></span>
+      <span class="badge-text" id="statusText">Idle</span>
+    </div>
+  </header>
+
+  <!-- ─── KEYWORDS ─── -->
+  <section class="section">
+    <div class="section-title">Job Keywords</div>
+    <div class="roles-grid">
+      <label class="role-chip"><input type="checkbox" checked value="software engineer intern"><span>Software Eng</span></label>
+      <label class="role-chip"><input type="checkbox" checked value="AI ML intern"><span>AI / ML</span></label>
+      <label class="role-chip"><input type="checkbox" checked value="data science intern"><span>Data Science</span></label>
+      <label class="role-chip"><input type="checkbox" value="frontend intern"><span>Frontend</span></label>
+      <label class="role-chip"><input type="checkbox" value="backend intern"><span>Backend</span></label>
+      <label class="role-chip"><input type="checkbox" value="cybersecurity intern"><span>Cybersecurity</span></label>
+      <label class="role-chip"><input type="checkbox" value="cloud devops intern"><span>Cloud / DevOps</span></label>
+      <label class="role-chip"><input type="checkbox" value="mobile app intern"><span>Mobile App</span></label>
+    </div>
+  </section>
+
+  <!-- ─── CONFIG ─── -->
+  <section class="section section-row">
+    <div class="field">
+      <label class="field-label" for="countryFilter">Country Filter</label>
+      <select class="field-input field-select" id="countryFilter">
+        <option value="">All Countries</option>
+        <option value="United States">United States</option>
+        <option value="United Kingdom">United Kingdom</option>
+        <option value="India">India</option>
+        <option value="Canada">Canada</option>
+        <option value="Australia">Australia</option>
+        <option value="Germany">Germany</option>
+        <option value="Singapore">Singapore</option>
+        <option value="Remote">Remote</option>
+      </select>
+    </div>
+    <div class="field field-sm">
+      <label class="field-label" for="maxLeads">Max Jobs</label>
+      <input class="field-input" type="number" id="maxLeads" value="100" min="5" max="500">
+    </div>
+  </section>
+
+  <!-- ─── SITE SELECTOR ─── -->
+  <section class="section">
+    <div class="section-title">Scrape From</div>
+    <div class="sites-grid">
+      <label class="site-chip">
+        <input type="checkbox" id="siteIndeed" checked value="indeed">
+        <span class="site-chip-inner">
+          <span class="site-dot dot-indeed"></span>Indeed
+        </span>
+      </label>
+      <label class="site-chip">
+        <input type="checkbox" id="siteInternshala" checked value="internshala">
+        <span class="site-chip-inner">
+          <span class="site-dot dot-internshala"></span>Internshala
+        </span>
+      </label>
+      <label class="site-chip">
+        <input type="checkbox" id="siteSimplyhired" checked value="simplyhired">
+        <span class="site-chip-inner">
+          <span class="site-dot dot-simplyhired"></span>SimplyHired
+        </span>
+      </label>
+    </div>
+  </section>
+
+  <!-- ─── AUTO PAGINATE TOGGLE ─── -->
+  <section class="section section-toggle">
+    <div class="toggle-info">
+      <div class="toggle-title">Auto-Paginate <span class="badge-new">multi-page</span></div>
+      <div class="toggle-sub">Automatically scrape through multiple result pages</div>
+    </div>
+    <label class="switch">
+      <input type="checkbox" id="autoPaginateToggle" checked>
+      <span class="slider"></span>
+    </label>
+  </section>
+
+  <!-- ─── CONTROLS ─── -->
+  <div class="controls">
+    <button id="startBtn" class="btn btn-start">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+      Start Scraping
+    </button>
+    <button id="stopBtn" class="btn btn-stop" disabled>
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+      Stop
+    </button>
+  </div>
+
+  <!-- ─── STATS ─── -->
+  <section class="stats-bar">
+    <div class="stat">
+      <span class="stat-num" id="jobsCount">0</span>
+      <span class="stat-lbl">Jobs</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-num" id="pagesCount">0</span>
+      <span class="stat-lbl">Pages</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-num stat-green" id="countriesCount">0</span>
+      <span class="stat-lbl">Countries</span>
+    </div>
+  </section>
+  <div class="progress-wrap">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+  <div class="status-msg" id="statusMessage">Select keywords &amp; sites, then click Start Scraping.</div>
+
+  <!-- ─── JOBS TABLE ─── -->
+  <section class="table-section">
+    <div class="table-header">
+      <span class="section-title" style="margin:0">Recent Jobs</span>
+      <span class="count-badge" id="jobsBadge">0</span>
+    </div>
+    <div class="table-wrap">
+      <table class="leads-table" id="jobsTable">
+        <thead>
+          <tr>
+            <th>Country</th>
+            <th>Title</th>
+            <th>Company</th>
+            <th>Source</th>
+          </tr>
+        </thead>
+        <tbody id="jobsTableBody">
+          <tr><td colspan="4" class="empty-cell">No jobs yet — start scraping above.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ─── EXPORT ─── -->
+  <div class="export-bar">
+    <button id="exportBtn" class="btn btn-export" disabled>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Export to Excel (CSV)
+    </button>
+    <button id="clearBtn" class="btn btn-clear">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+      Clear
+    </button>
+  </div>
+
+</div>
+<script src="popup.js"></script>
+</body>
+</html>
