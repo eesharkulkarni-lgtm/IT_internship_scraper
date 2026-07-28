@@ -85,23 +85,25 @@ if (!window.__internshipSimplyHired) {
   function extractJobs(seen) {
     const jobs = [];
 
-    // SimplyHired uses article.SerpJob or div[data-jobkey]
+    // SimplyHired uses article.SerpJob, div[data-jobkey], OR mirrors Indeed's DOM [data-jk]
     const cards = document.querySelectorAll(
-      'article.SerpJob, [data-jobkey], .jobposting-snippet, .chakra-linkbox'
+      'article.SerpJob, [data-jobkey], [data-jk], .jobposting-snippet, .chakra-linkbox, li.css-5lfssm, .job_seen_beacon, li[class*="Result"]'
     );
 
     for (const card of cards) {
       try {
         // Job key for deduplication
         const jobKey = card.getAttribute('data-jobkey') ||
+                       card.getAttribute('data-jk') ||
                        card.querySelector('[data-jobkey]')?.getAttribute('data-jobkey') ||
+                       card.querySelector('[data-jk]')?.getAttribute('data-jk') ||
                        generateId(card);
 
         if (seen.has(jobKey)) continue;
 
         // Title
         const titleEl = card.querySelector(
-          'h2[data-testid="searchSerpJobTitle"] a, .jobposting-title, h3.title a, a[data-testid="job-title"]'
+          'h2[data-testid="searchSerpJobTitle"] a, .jobposting-title, h3.title a, a[data-testid="job-title"], h2.jobTitle span[title], h2.jobTitle span, h2 a span'
         );
         const title = clean(titleEl?.textContent || '');
         if (!title || title.length < 3) continue;
@@ -111,20 +113,20 @@ if (!window.__internshipSimplyHired) {
 
         // Company
         const companyEl = card.querySelector(
-          'span[data-testid="companyName"], .company, .jobposting-company'
+          'span[data-testid="companyName"], .company, .jobposting-company, [data-testid="company-name"], .companyName'
         );
         const company = clean(companyEl?.textContent || '');
 
         // Location
         const locationEl = card.querySelector(
-          'span[data-testid="searchSerpJobLocation"], .jobposting-location, .location'
+          'span[data-testid="searchSerpJobLocation"], .jobposting-location, .location, [data-testid="text-location"], .companyLocation'
         );
         const rawLocation = clean(locationEl?.textContent || '');
         const country = parseCountry(rawLocation);
 
         // Apply link — SimplyHired job detail pages
         const linkEl = card.querySelector(
-          'h2[data-testid="searchSerpJobTitle"] a, a[data-testid="job-title"], a.jobposting-title'
+          'h2[data-testid="searchSerpJobTitle"] a, a[data-testid="job-title"], a.jobposting-title, a[data-jk], h2 a'
         );
         let applyLink = '';
         if (linkEl?.href) {

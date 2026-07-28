@@ -113,28 +113,48 @@ async function startScraping(sites, config) {
 
 // ─── Build search URL per site ────────────────────────────────
 function buildUrl(site, config) {
-  const kw      = config.keywords || 'software engineer intern';
+  const kws     = Array.isArray(config.keywords) ? config.keywords : ['software engineer'];
   const country = config.country  || '';
 
+  // Clean up " intern" or " internship" from our base keywords
+  const cleanKws = kws.map(k => k.replace(/\s+intern(ship)?$/i, '').trim());
+
   if (site === 'indeed') {
-    const q   = encodeURIComponent(kw + ' internship');
-    const loc = (country && country !== 'Remote') ? encodeURIComponent(country) : '';
+    // Indeed supports (A or B)
+    const qStr = cleanKws.length > 1 ? `(${cleanKws.slice(0, 3).join(' or ')}) internship` : `${cleanKws[0]} internship`;
+    const q    = encodeURIComponent(qStr);
+    const loc  = (country && country !== 'Remote') ? encodeURIComponent(country) : '';
     return `https://www.indeed.com/jobs?q=${q}&l=${loc}&sort=date`;
   }
+  
   if (site === 'internshala') {
-    // Internshala URL: /internships/computer-science-internship/
-    const slug = kw.toLowerCase()
-      .replace(/\s+or\s+/gi, '-')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/-+/g, '-')
-      .replace(/^-|-$/g, '');
-    return `https://internshala.com/internships/${slug}-internship/`;
+    // Internshala uses strict category slugs. We'll map our keywords to their exact slugs
+    const slugMap = {
+      'software engineer': 'software-development',
+      'ai ml': 'machine-learning',
+      'ai / ml': 'machine-learning',
+      'data science': 'data-science',
+      'frontend': 'front-end-development',
+      'backend': 'backend-development',
+      'cybersecurity': 'cyber-security',
+      'cloud devops': 'cloud-computing',
+      'cloud / devops': 'cloud-computing',
+      'mobile app': 'mobile-app-development'
+    };
+    
+    const slugs = cleanKws.map(k => slugMap[k.toLowerCase()] || k.toLowerCase().replace(/[^a-z0-9]+/g, '-')).slice(0, 3);
+    const slugStr = slugs.join(',');
+    return `https://internshala.com/internships/${slugStr}-internship/`;
   }
+  
   if (site === 'simplyhired') {
-    const q   = encodeURIComponent(kw + ' intern');
-    const loc = (country && country !== 'Remote') ? encodeURIComponent(country) : '';
+    // SimplyHired is similar to Indeed
+    const qStr = cleanKws.length > 1 ? `(${cleanKws.slice(0, 3).join(' or ')}) intern` : `${cleanKws[0]} intern`;
+    const q    = encodeURIComponent(qStr);
+    const loc  = (country && country !== 'Remote') ? encodeURIComponent(country) : '';
     return `https://www.simplyhired.com/search?q=${q}&l=${loc}&t=0`;
   }
+  
   return null;
 }
 

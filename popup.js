@@ -123,10 +123,9 @@ startBtn.addEventListener('click', async () => {
   const maxLeads     = parseInt($('maxLeads').value) || 100;
   const autoPaginate = autoPaginateToggle.checked;
   const perSiteMax   = Math.ceil(maxLeads / selectedSites.length);
-  const keywordStr   = keywords.slice(0, 2).join(' OR ');
 
   const config = {
-    keywords:    keywordStr,
+    keywords:    keywords, // Pass the array directly to background.js
     country,
     maxLeads:    perSiteMax,
     autoPaginate
